@@ -37,3 +37,4 @@ jobs:
       - name: Upload UF2
         uses: actions/upload-artifact@v3
         with:
+          path: C-Code/build/*.uf2
