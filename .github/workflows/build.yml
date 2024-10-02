@@ -1,0 +1,39 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install Pico SDK
+        run: |
+          git clone https://github.com/raspberrypi/pico-sdk.git
+          cd pico-sdk
+          git submodule update --init --recursive
+          cd ..
+
+      - name: Build
+        run: |
+          export PICO_SDK_PATH=pico-sdk
+          export PATH=$PICO_SDK_PATH/tools:$PATH
+          cd C-Code
+          mkdir build
+          cd build
+          cmake -DPICO_BOARD=pico ..
+          make
+
+      - name: Upload UF2
+        uses: actions/upload-artifact@v3
+        with:
